@@ -12,7 +12,11 @@ from forms import CreatePostForm,RegisterForm, LoginForm,CommentForm
 from flask_gravatar import Gravatar
 from functools import wraps
 from flask import abort
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 ckeditor = CKEditor(app)
@@ -168,7 +172,7 @@ def add_new_post():
     return render_template("make-post.html", form=form)
 
 
-@app.route("/edit-post/<int:post_id>")
+@app.route("/edit-post/<int:post_id>",methods=["GET","POST"])
 def edit_post(post_id):
     post = BlogPost.query.get(post_id)
     edit_form = CreatePostForm(
@@ -182,7 +186,6 @@ def edit_post(post_id):
         post.title = edit_form.title.data
         post.subtitle = edit_form.subtitle.data
         post.img_url = edit_form.img_url.data
-        post.author = edit_form.author.data
         post.body = edit_form.body.data
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
@@ -202,4 +205,4 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000,debug=True)
+    app.run(host='localhost', port=8080,debug=True)
